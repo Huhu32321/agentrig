@@ -1,0 +1,11 @@
+# Main environment (Python 3.10-3.11)
+pyyaml
+requests
+numpy
+pillow
+rembg[cpu]        # background removal (GPU: rembg[gpu])
+onnxruntime
+mediapipe         # 2D pose estimation
+gradio            # artist UI (optional)
+# Blender-side scripts run inside Blender's own Python (or `pip install bpy`).
+# Hunyuan3D-2.1 (optional local image-to-3D) lives in its own environment, see its repository.

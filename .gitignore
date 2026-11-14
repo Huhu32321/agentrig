@@ -1,0 +1,28 @@
+# local config and secrets
+config.yaml
+.env
+*.key
+
+# environments / caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# run outputs and benchmark data (large, regenerated)
+output/
+output_*.log
+bench_data/
+*.blend
+*.blend1
+*.fbx
+*.glb
+*.gltf
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

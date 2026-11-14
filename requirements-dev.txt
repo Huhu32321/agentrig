@@ -1,0 +1,8 @@
+# what CI needs: the pure-Python parts (no Blender / UE / ML models)
+pyyaml
+requests
+numpy
+pillow
+matplotlib
+pytest
+ruff

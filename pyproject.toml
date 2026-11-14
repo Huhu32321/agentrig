@@ -1,0 +1,20 @@
+[project]
+name = "agentrig"
+version = "0.2.0"
+description = "LLM-orchestrated pipeline from a character concept image to a rigged, playable UE5 character"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+
+[tool.ruff]
+line-length = 160
+target-version = "py310"
+# Blender / UE scripts run inside their host's Python and use its modules
+extend-exclude = ["output", "bench_data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E731", "E402", "E741"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

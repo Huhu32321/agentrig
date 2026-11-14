@@ -1,0 +1,93 @@
+# ============================================================
+#  AgentRig - configuration
+#  Copy to config.yaml and edit for your machine.
+#  API keys are ONLY read from environment variables.
+# ============================================================
+
+paths:
+  # Blender executable (4.2+ / 5.x). Empty = use the bpy module of the current Python (pip install bpy)
+  blender_exe: "C:/Program Files/Blender Foundation/Blender 4.5/blender.exe"
+  # UE 5.7 editor and the project that receives the assets
+  ue_editor_cmd: "C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/UnrealEditor-Cmd.exe"
+  ue_project: "D:/UEProjects/MyProject/MyProject.uproject"
+  output_root: "./output"
+
+# ---- LLM agent (any OpenAI-compatible endpoint: DeepSeek / Qwen / OpenAI / local vLLM) ----
+llm:
+  enabled: true
+  base_url: "https://api.deepseek.com"
+  model: "deepseek-chat"
+  api_key_env: "LLM_API_KEY"
+  max_turns: 40
+
+# ---- Vision model: reads the concept, front/back, QA renders (must accept images) ----
+vlm:
+  enabled: true
+  base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  model: "qwen3-vl-plus"
+  api_key_env: "VLM_API_KEY"
+
+# ---- Step 1 preprocess ----
+preprocess:
+  remove_background: true      # rembg; falls back to white-background thresholding
+  rembg_model: "isnet-anime"   # anime/stylised characters; realistic: birefnet-general (heavier)
+  size: 1024
+  front_view: "auto"           # auto (VLM decides) | left | right | 0,1,2...
+
+# ---- Step 3 image-to-3D ----
+gen3d:
+  backend: "manual"            # hunyuan_local | tripo | manual
+  use_multiview: true          # send front + back views when the backend supports it
+  hunyuan_url: "http://127.0.0.1:8081"   # Hunyuan3D-2.1 api_server.py
+  hunyuan:
+    texture: true
+    octree_resolution: 384
+    num_inference_steps: 30
+    guidance_scale: 5.0
+    face_count: 60000
+    seed: 1234
+  tripo:
+    api_key_env: "TRIPO_API_KEY"
+    base_url: "https://api.tripo3d.ai/v2/openapi"
+    model_version: "v2.5-20250123"
+    texture_quality: "detailed"
+  manual_model: ""             # backend=manual: use this existing glb/obj/fbx
+  timeout_s: 1800
+
+# ---- Step 4 cleanup ----
+cleanup:
+  target_height_m: 1.75
+  max_tris: 50000
+  merge_distance: 0.00001
+  front_axis: "-Y"             # where the character faces in Blender; the agent flips it if the model faces away
+
+# ---- Steps 6-8 joints / skeleton / skinning ----
+rig:
+  joint_method: "auto"         # auto | pose2d | geometric
+  weight_method: "auto"        # auto | heat | proxy_heat
+  cloth_smoothing: "auto"      # auto (on when VLM / geometry finds a skirt or wide trousers) | on | off
+  arm_anchor: true             # shoulders from the arm/torso junction; vetoes inconsistent 2D shoulders
+  vertical_reconcile: true     # rebuild neck / clavicles / pelvis from 2D keypoints on stylised proportions
+  skin_postprocess: true       # far-weight pruning, rigid islands, head-attached parts
+  render_tests: true           # stress-pose QA renders (off in the benchmark)
+  render_engine: "CYCLES"      # BLENDER_WORKBENCH is much faster
+  render_res: 768
+  render_samples: 16
+
+# ---- Step 9 UE ----
+ue:
+  mode: "editor"               # editor (windowless full editor, default) | remote (running editor with Python Remote Execution) | commandlet (crashes on import in 5.7)
+  content_root: "/Game/AIChar"
+  make_level: true
+  retarget_anim_blueprint: true
+  make_character_bp: true
+  play_test: true             # press Play headlessly, walk the pawn, check that the feet step
+  anim_source:
+    type: "manny"              # manny (Third Person template animations) | fbx (your own mocap)
+    search_root: "/Game"
+    idle: ""                   # empty = search automatically, or give an asset path
+    walk: ""
+    # for type: fbx
+    skeleton_fbx: ""           # e.g. D:/mocap/Actor.fbx
+    anims: {}                  # {Idle: "D:/mocap/idle.fbx", Walk: "D:/mocap/walk.fbx"}
+  timeout_s: 1800

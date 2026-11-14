@@ -1,0 +1,10 @@
+{
+ "detection": {
+  "n": 41,
+  "failures": 5,
+  "flagged": 7,
+  "tp": 1,
+  "fp": 6,
+  "fn": 4
+ }
+}
